@@ -9,23 +9,37 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.List;
 
-public class WordAdapter extends RecyclerView.Adapter<WordAdapter.ViewHolder> {
+public class WordAdapter extends ListAdapter<Word,WordAdapter.ViewHolder> {
 
-    List<Word> allWords;
     boolean useCardView;
     private WordViewModel viewModel;
 
-    public void setAllWords(List<Word> allWords) {
-        this.allWords = allWords;
-    }
+
 
     public WordAdapter(boolean useCardView, WordViewModel wordViewModel) {
+        super(new DiffUtil.ItemCallback<Word>() {
+            @Override
+            public boolean areItemsTheSame(@NonNull Word oldItem, @NonNull Word newItem) {
+                // 比较列表两个元素id是否相同
+                return oldItem.getId() == newItem.getId();
+            }
+
+            @Override
+            public boolean areContentsTheSame(@NonNull Word oldItem, @NonNull Word newItem) {
+                // 内容是否相同
+                return (oldItem.getWord().equals(newItem.getWord())&&
+                        oldItem.getChineseMeaning().equals(newItem.getChineseMeaning())&&
+                        oldItem.isChineseInvisible() == newItem.isChineseInvisible());
+            }
+        });
         this.useCardView = useCardView;
         this.viewModel = wordViewModel;
     }
@@ -86,7 +100,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Word word = allWords.get(position);
+        Word word = getItem(position);
         holder.itemView.setTag(R.id.word_for_view_holder,word);
         holder.number.setText(String.valueOf(position));
         holder.englishText.setText(word.getWord());
@@ -100,11 +114,20 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.ViewHolder> {
         }
 
     }
+
+    /**
+     * Called when a view created by this adapter has been attached to a window.
+     *
+     * <p>This can be used as a reasonable signal that the view is about to be seen
+     * by the user. If the adapter previously freed any resources in
+     * {@link #onViewDetachedFromWindow(RecyclerView.ViewHolder) onViewDetachedFromWindow}
+     * those resources should be restored here.</p>
+     *
+     * @param holder Holder of the view being attached
+     */
     @Override
-    public int getItemCount() {
-        if (allWords==null){
-            return 0;
-        }
-        return allWords.size();
+    public void onViewAttachedToWindow(@NonNull ViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+        holder.number.setText(String.valueOf(holder.getBindingAdapterPosition()));
     }
 }

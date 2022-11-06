@@ -25,6 +25,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -57,6 +58,26 @@ public class WordFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
         adapter1 = new WordAdapter(false,viewModel);
         adapter2 = new WordAdapter(true,viewModel);
+        recyclerView.setItemAnimator(new DefaultItemAnimator(){
+            // 动画结束后
+            @Override
+            // viewHolder:正在动画的单元item
+            public void onAnimationFinished(@NonNull RecyclerView.ViewHolder viewHolder) {
+                super.onAnimationFinished(viewHolder);
+                // 找回LinearLayoutManager
+                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                if (linearLayoutManager!=null){
+                    // 获取可使界面的第一个和最后一个item
+                    int firstPosition = linearLayoutManager.findFirstVisibleItemPosition();
+                    int lastPosition = linearLayoutManager.findLastVisibleItemPosition();
+                    for (int i = firstPosition;i<=lastPosition;i++){
+                        // 取回viewHolder
+                        WordAdapter.ViewHolder holder = (WordAdapter.ViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
+                        holder.number.setText(String.valueOf(i));
+                    }
+                }
+            }
+        });
         // 读取列表item类型
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences(VIEW_TYPE, Context.MODE_PRIVATE);
         boolean viewType = sharedPreferences.getBoolean(IS_USING_CARD_VIEW,false);
@@ -71,13 +92,18 @@ public class WordFragment extends Fragment {
             @Override
             public void onChanged(List<Word> words) {
                 int temp = adapter1.getItemCount();
-                adapter1.setAllWords(words);
-                adapter2.setAllWords(words);
+
                 // notifyDataSetChanged（）数据改变，就去刷新视图
                 // 长度不变化，不调用notiXX（）耗时操作
                 if (temp!=words.size()){
+                    // 滚动产生视觉反馈
+                    recyclerView.smoothScrollBy(0,-200);
+                    // 提交列表给适配器(后台自动比较，取决刷新)
+                    adapter1.submitList(words);
+                    adapter2.submitList(words);
+/*
                     adapter1.notifyDataSetChanged();
-                    adapter2.notifyDataSetChanged();
+                    adapter2.notifyDataSetChanged();*/
                 }
             }
         });
@@ -115,13 +141,12 @@ public class WordFragment extends Fragment {
                     @Override
                     public void onChanged(List<Word> words) {
                         int temp = adapter1.getItemCount();
-                        adapter1.setAllWords(words);
-                        adapter2.setAllWords(words);
+
                         // notifyDataSetChanged（）数据改变，就去刷新视图
                         // 长度不变化，不调用notiXX（）耗时操作
                         if (temp!=words.size()){
-                            adapter1.notifyDataSetChanged();
-                            adapter2.notifyDataSetChanged();
+                            adapter1.submitList(words);
+                            adapter2.submitList(words);
                         }
                     }
                 });
