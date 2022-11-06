@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    // 项目中的唯一id，不会起冲突，而且也有利于管理和查询
+    <item name="word_for_view_holder" type="id"/>
+</resources>
