@@ -38,11 +38,16 @@ public class AddFragment extends Fragment {
         chineseEdit = view.findViewById(R.id.chineseEdit);
         button = view.findViewById(R.id.button);
         button.setEnabled(false);
+        englishEdit.setFocusable(true);
+        englishEdit.setFocusableInTouchMode(true);
         englishEdit.requestFocus();
-        // 自动唤醒键盘
-        InputMethodManager inputMethodManager = (InputMethodManager)getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
-        // 参数：跟控件挂钩；
-        inputMethodManager.showSoftInput(englishEdit, 0);
+/*        // 自动唤醒键盘
+        InputMethodManager inputMethodManager = (InputMethodManager)view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        // 参数：跟控件挂钩；*/
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(englishEdit, 0);
+        imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_NOT_ALWAYS);
+
         TextWatcher textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
