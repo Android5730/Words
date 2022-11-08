@@ -12,10 +12,10 @@ public class Word {
 
     // 列的名称
     @ColumnInfo(name = "english_word")
-    private String word;
+    private final String word;
 
     @ColumnInfo(name = "chinese_meaning")
-    private String chineseMeaning;
+    private final String chineseMeaning;
     @ColumnInfo(name = "foo_data")
     private boolean foo;
     @ColumnInfo(name = "chinese_invisible")
@@ -48,16 +48,8 @@ public class Word {
         return word;
     }
 
-    public void setWord(String word) {
-        this.word = word;
-    }
-
     public String getChineseMeaning() {
         return chineseMeaning;
-    }
-
-    public void setChineseMeaning(String chineseMeaning) {
-        this.chineseMeaning = chineseMeaning;
     }
 
     public int getId() {

@@ -2,7 +2,6 @@ package com.itaem.words;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -85,6 +84,7 @@ public class WordFragment extends Fragment {
                         WordAdapter.ViewHolder holder = (WordAdapter.ViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
                         // 清空数据时，firstPosition及lastPosition会变成-1，导致下方控件出现空对象异常
                         if (firstPosition!=-1&&lastPosition!=-1){
+                            assert holder != null;
                             holder.number.setText(String.valueOf(i));
                         }
                     }
@@ -105,25 +105,22 @@ public class WordFragment extends Fragment {
         }
         findWords = viewModel.getAllWordsLive();
         // 添加观察者，数据变化就执行onChanged（）方法
-        findWords.observe(getViewLifecycleOwner(), new Observer<List<Word>>() {
-            @Override
-            public void onChanged(List<Word> words) {
-                int temp = adapter1.getItemCount();
-                // notifyDataSetChanged（）数据改变，就去刷新视图
-                // 长度不变化，不调用notiXX（）耗时操作
-                if (temp!=words.size()){
-                    // 滚动产生视觉反馈
-                    if (temp<words.size()&& !undoAction){ // 原有参数小于现有的参数，即增加就滑动
-                        recyclerView.smoothScrollBy(0,-200);
-                    }
-                    undoAction = false;
-                    // 提交列表给适配器(后台自动比较，取决刷新)
-                    adapter1.submitList(words);
-                    adapter2.submitList(words);
-/*
-                    adapter1.notifyDataSetChanged();
-                    adapter2.notifyDataSetChanged();*/
+        findWords.observe(getViewLifecycleOwner(), words -> {
+            int temp = adapter1.getItemCount();
+            // notifyDataSetChanged（）数据改变，就去刷新视图
+            // 长度不变化，不调用notiXX（）耗时操作
+            if (temp!=words.size()){
+                // 滚动产生视觉反馈
+                if (temp<words.size()&& !undoAction){ // 原有参数小于现有的参数，即增加就滑动
+                    recyclerView.smoothScrollBy(0,-200);
                 }
+                undoAction = false;
+                // 提交列表给适配器(后台自动比较，取决刷新)
+                adapter1.submitList(words);
+                adapter2.submitList(words);
+/*
+                adapter1.notifyDataSetChanged();
+                adapter2.notifyDataSetChanged();*/
             }
         });
         // rv辅助工具
@@ -168,8 +165,8 @@ public class WordFragment extends Fragment {
                             .show();
                 }
             }
-            Drawable icon = ContextCompat.getDrawable(requireActivity(),R.drawable.ic_baseline_delete_forever_24);
-            Drawable background = new ColorDrawable(Color.LTGRAY);
+            final Drawable icon = ContextCompat.getDrawable(requireActivity(),R.drawable.ic_baseline_delete_forever_24);
+            final Drawable background = new ColorDrawable(Color.LTGRAY);
             @Override
             public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);

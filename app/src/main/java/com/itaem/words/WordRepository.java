@@ -9,8 +9,8 @@ import androidx.lifecycle.LiveData;
 import java.util.List;
 
 public class WordRepository {
-    private LiveData<List<Word>> allWordsLive;
-    private WordDao wordDao;
+    private final LiveData<List<Word>> allWordsLive;
+    private final WordDao wordDao;
 
     public WordRepository(Context context) {
         WordDetabase wordDetabase = WordDetabase.getDatabase(context);
@@ -42,7 +42,7 @@ public class WordRepository {
     }
     // 子线程操作
     static class InsertAsyncTask extends AsyncTask<Word,Void,Void> {
-        private WordDao wordDao;
+        private final WordDao wordDao;
 
         public InsertAsyncTask(WordDao wordDao) {
             this.wordDao = wordDao;
@@ -60,7 +60,7 @@ public class WordRepository {
         }
     }
     static class UpdateAsyncTask extends AsyncTask<Word,Void,Void>{
-        private WordDao wordDao;
+        private final WordDao wordDao;
 
         public UpdateAsyncTask(WordDao wordDao) {
             this.wordDao = wordDao;
@@ -78,7 +78,7 @@ public class WordRepository {
         }
     }
     static class DeleteAsyncTask extends AsyncTask<Word,Void,Void>{
-        private WordDao wordDao;
+        private final WordDao wordDao;
 
         public DeleteAsyncTask(WordDao wordDao) {
             this.wordDao = wordDao;
@@ -96,7 +96,7 @@ public class WordRepository {
         }
     }
     static class DeleteAllAsyncTask extends AsyncTask<Void,Void,Void>{
-        private WordDao wordDao;
+        private final WordDao wordDao;
 
         public DeleteAllAsyncTask(WordDao wordDao) {
             this.wordDao = wordDao;

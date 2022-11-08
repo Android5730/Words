@@ -15,12 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
-import java.util.List;
-
 public class WordAdapter extends ListAdapter<Word,WordAdapter.ViewHolder> {
 
     boolean useCardView;
-    private WordViewModel viewModel;
+    private final WordViewModel viewModel;
 
 
 
